@@ -21,17 +21,18 @@
 ;; **
 
 ;; @@
-(def simulation_duration 500)
-(def traffic_rate_a 0.5)
-(def traffic_rate_b 0.4)
+(def sim-params {:turns 500, :traffic-rate-a 0.2, :traffic-rate-b 0.4, :downtime 2})
+(def simulation_duration (sim-params :turns))
+(def traffic_rate_a (sim-params :traffic-rate-a))
+(def traffic_rate_b (sim-params :traffic-rate-b))
 
-(def change_downtime 2)
+(def change_downtime (sim-params :downtime))
 
 (defn waiting_cost [t] (+ (* 10 t) (* 1 t t) ) )
 
 ;; @@
 ;; =>
-;;; {"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/simulation_duration</span>","value":"#'pp-code.SimpleCrossing/simulation_duration"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/traffic_rate_a</span>","value":"#'pp-code.SimpleCrossing/traffic_rate_a"}],"value":"[#'pp-code.SimpleCrossing/simulation_duration,#'pp-code.SimpleCrossing/traffic_rate_a]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/traffic_rate_b</span>","value":"#'pp-code.SimpleCrossing/traffic_rate_b"}],"value":"[[#'pp-code.SimpleCrossing/simulation_duration,#'pp-code.SimpleCrossing/traffic_rate_a],#'pp-code.SimpleCrossing/traffic_rate_b]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/change_downtime</span>","value":"#'pp-code.SimpleCrossing/change_downtime"}],"value":"[[[#'pp-code.SimpleCrossing/simulation_duration,#'pp-code.SimpleCrossing/traffic_rate_a],#'pp-code.SimpleCrossing/traffic_rate_b],#'pp-code.SimpleCrossing/change_downtime]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/waiting_cost</span>","value":"#'pp-code.SimpleCrossing/waiting_cost"}],"value":"[[[[#'pp-code.SimpleCrossing/simulation_duration,#'pp-code.SimpleCrossing/traffic_rate_a],#'pp-code.SimpleCrossing/traffic_rate_b],#'pp-code.SimpleCrossing/change_downtime],#'pp-code.SimpleCrossing/waiting_cost]"}
+;;; {"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/sim-params</span>","value":"#'pp-code.SimpleCrossing/sim-params"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/simulation_duration</span>","value":"#'pp-code.SimpleCrossing/simulation_duration"}],"value":"[#'pp-code.SimpleCrossing/sim-params,#'pp-code.SimpleCrossing/simulation_duration]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/traffic_rate_a</span>","value":"#'pp-code.SimpleCrossing/traffic_rate_a"}],"value":"[[#'pp-code.SimpleCrossing/sim-params,#'pp-code.SimpleCrossing/simulation_duration],#'pp-code.SimpleCrossing/traffic_rate_a]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/traffic_rate_b</span>","value":"#'pp-code.SimpleCrossing/traffic_rate_b"}],"value":"[[[#'pp-code.SimpleCrossing/sim-params,#'pp-code.SimpleCrossing/simulation_duration],#'pp-code.SimpleCrossing/traffic_rate_a],#'pp-code.SimpleCrossing/traffic_rate_b]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/change_downtime</span>","value":"#'pp-code.SimpleCrossing/change_downtime"}],"value":"[[[[#'pp-code.SimpleCrossing/sim-params,#'pp-code.SimpleCrossing/simulation_duration],#'pp-code.SimpleCrossing/traffic_rate_a],#'pp-code.SimpleCrossing/traffic_rate_b],#'pp-code.SimpleCrossing/change_downtime]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/waiting_cost</span>","value":"#'pp-code.SimpleCrossing/waiting_cost"}],"value":"[[[[[#'pp-code.SimpleCrossing/sim-params,#'pp-code.SimpleCrossing/simulation_duration],#'pp-code.SimpleCrossing/traffic_rate_a],#'pp-code.SimpleCrossing/traffic_rate_b],#'pp-code.SimpleCrossing/change_downtime],#'pp-code.SimpleCrossing/waiting_cost]"}
 ;; <=
 
 ;; **
@@ -68,7 +69,7 @@
 ;; <=
 
 ;; @@
-(def generate_traffic_query (doquery :importance generate_traffic [simulation_duration]))
+(def generate_traffic_query (doquery :importance generate_traffic [(sim-params :turns)]))
 (def generate_traffic_sample (first generate_traffic_query))
 (def generated_traffic (:result generate_traffic_sample))
 
@@ -228,31 +229,31 @@
   )
 ;; @@
 ;; ->
-;;; {:cost 198910, :cycle_a 9, :cycle_b 7}
-;;; {:cost 230476, :cycle_a 9, :cycle_b 8}
-;;; {:cost 230476, :cycle_a 9, :cycle_b 8}
-;;; {:cost 230476, :cycle_a 9, :cycle_b 8}
-;;; {:cost 230476, :cycle_a 9, :cycle_b 8}
-;;; {:cost 230476, :cycle_a 9, :cycle_b 8}
-;;; {:cost 230476, :cycle_a 9, :cycle_b 8}
-;;; {:cost 308451, :cycle_a 8, :cycle_b 6}
-;;; {:cost 352653, :cycle_a 7, :cycle_b 6}
-;;; {:cost 385172, :cycle_a 9, :cycle_b 9}
-;;; {:cost 385172, :cycle_a 9, :cycle_b 9}
-;;; {:cost 385172, :cycle_a 9, :cycle_b 9}
-;;; {:cost 385172, :cycle_a 9, :cycle_b 9}
-;;; {:cost 385172, :cycle_a 9, :cycle_b 9}
-;;; {:cost 458764, :cycle_a 8, :cycle_b 8}
-;;; {:cost 483609, :cycle_a 9, :cycle_b 6}
-;;; {:cost 483609, :cycle_a 9, :cycle_b 6}
-;;; {:cost 583268, :cycle_a 7, :cycle_b 5}
-;;; {:cost 583268, :cycle_a 7, :cycle_b 5}
-;;; {:cost 583268, :cycle_a 7, :cycle_b 5}
-;;; {:cost 583347, :cycle_a 7, :cycle_b 7}
-;;; {:cost 583347, :cycle_a 7, :cycle_b 7}
-;;; {:cost 596241, :cycle_a 6, :cycle_b 5}
-;;; {:cost 596241, :cycle_a 6, :cycle_b 5}
-;;; {:cost 713912, :cycle_a 8, :cycle_b 9}
+;;; {:cost 38417, :cycle_a 5, :cycle_b 9}
+;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
+;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
+;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
+;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
+;;; {:cost 43133, :cycle_a 6, :cycle_b 9}
+;;; {:cost 43133, :cycle_a 6, :cycle_b 9}
+;;; {:cost 43133, :cycle_a 6, :cycle_b 9}
+;;; {:cost 43133, :cycle_a 6, :cycle_b 9}
+;;; {:cost 43133, :cycle_a 6, :cycle_b 9}
+;;; {:cost 45051, :cycle_a 4, :cycle_b 9}
+;;; {:cost 45051, :cycle_a 4, :cycle_b 9}
+;;; {:cost 45051, :cycle_a 4, :cycle_b 9}
+;;; {:cost 45936, :cycle_a 4, :cycle_b 7}
+;;; {:cost 45936, :cycle_a 4, :cycle_b 7}
+;;; {:cost 50361, :cycle_a 5, :cycle_b 8}
+;;; {:cost 58439, :cycle_a 5, :cycle_b 7}
+;;; {:cost 58439, :cycle_a 5, :cycle_b 7}
+;;; {:cost 59414, :cycle_a 7, :cycle_b 9}
+;;; {:cost 75995, :cycle_a 6, :cycle_b 8}
+;;; {:cost 75995, :cycle_a 6, :cycle_b 8}
+;;; {:cost 86746, :cycle_a 4, :cycle_b 6}
+;;; {:cost 86746, :cycle_a 4, :cycle_b 6}
+;;; {:cost 86746, :cycle_a 4, :cycle_b 6}
+;;; {:cost 86746, :cycle_a 4, :cycle_b 6}
 ;;; 
 ;; <-
 ;; =>
@@ -260,13 +261,28 @@
 ;; <=
 
 ;; @@
-(let [get-cycles (fn [cycle-key] (map (fn [c] (vals (select-keys c [cycle-key :cost]))) top_cycles))]
+(let [get-cycles (fn [cycle-key] (map (fn [c] (vals (select-keys c [cycle-key :cost]))) top_cycles))
+      plot-size 1200
+      opacity 0.25
+      x-range [1 10]]
+  (println sim-params)
+  (doseq [c (take 5 top_cycles)]
+    (println c))
   (plot/compose
-    (plot/list-plot (get-cycles :cycle_a) :colour "red" :opacity 0.75) ;; Extract cycle_a and cost, and change the map into a sequence for list-plot
-  	(plot/list-plot (get-cycles :cycle_b) :colour "blue" :opacity 0.75)))
+    (plot/list-plot (get-cycles :cycle_a) :plot-size plot-size :opacity opacity :plot-range [x-range :all] :colour "red")
+  	(plot/list-plot (get-cycles :cycle_b) :plot-size plot-size :opacity opacity :plot-range [x-range :all] :colour "blue")))
 ;; @@
+;; ->
+;;; {:turns 500, :traffic-rate-a 0.2, :traffic-rate-b 0.4, :downtime 2}
+;;; {:cost 38417, :cycle_a 5, :cycle_b 9}
+;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
+;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
+;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
+;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
+;;; 
+;; <-
 ;; =>
-;;; {"type":"vega","content":{"width":400,"height":247.2187957763672,"padding":{"top":10,"left":55,"bottom":40,"right":10},"scales":[{"name":"x","type":"linear","range":"width","zero":false,"domain":{"data":"5b10f598-a02d-48d6-8f2f-e3542ecc7416","field":"data.x"}},{"name":"y","type":"linear","range":"height","nice":true,"zero":false,"domain":{"data":"5b10f598-a02d-48d6-8f2f-e3542ecc7416","field":"data.y"}}],"axes":[{"type":"x","scale":"x"},{"type":"y","scale":"y"}],"data":[{"name":"5b10f598-a02d-48d6-8f2f-e3542ecc7416","values":[{"x":9,"y":198910},{"x":9,"y":230476},{"x":9,"y":230476},{"x":9,"y":230476},{"x":9,"y":230476},{"x":9,"y":230476},{"x":9,"y":230476},{"x":8,"y":308451},{"x":7,"y":352653},{"x":9,"y":385172},{"x":9,"y":385172},{"x":9,"y":385172},{"x":9,"y":385172},{"x":9,"y":385172},{"x":8,"y":458764},{"x":9,"y":483609},{"x":9,"y":483609},{"x":7,"y":583268},{"x":7,"y":583268},{"x":7,"y":583268},{"x":7,"y":583347},{"x":7,"y":583347},{"x":6,"y":596241},{"x":6,"y":596241},{"x":8,"y":713912}]},{"name":"39decfb1-28a1-462c-90e9-dc1bb2c871b2","values":[{"x":7,"y":198910},{"x":8,"y":230476},{"x":8,"y":230476},{"x":8,"y":230476},{"x":8,"y":230476},{"x":8,"y":230476},{"x":8,"y":230476},{"x":6,"y":308451},{"x":6,"y":352653},{"x":9,"y":385172},{"x":9,"y":385172},{"x":9,"y":385172},{"x":9,"y":385172},{"x":9,"y":385172},{"x":8,"y":458764},{"x":6,"y":483609},{"x":6,"y":483609},{"x":5,"y":583268},{"x":5,"y":583268},{"x":5,"y":583268},{"x":7,"y":583347},{"x":7,"y":583347},{"x":5,"y":596241},{"x":5,"y":596241},{"x":9,"y":713912}]}],"marks":[{"type":"symbol","from":{"data":"5b10f598-a02d-48d6-8f2f-e3542ecc7416"},"properties":{"enter":{"x":{"scale":"x","field":"data.x"},"y":{"scale":"y","field":"data.y"},"fill":{"value":"red"},"fillOpacity":{"value":0.75}},"update":{"shape":"circle","size":{"value":70},"stroke":{"value":"transparent"}},"hover":{"size":{"value":210},"stroke":{"value":"white"}}}},{"type":"symbol","from":{"data":"39decfb1-28a1-462c-90e9-dc1bb2c871b2"},"properties":{"enter":{"x":{"scale":"x","field":"data.x"},"y":{"scale":"y","field":"data.y"},"fill":{"value":"blue"},"fillOpacity":{"value":0.75}},"update":{"shape":"circle","size":{"value":70},"stroke":{"value":"transparent"}},"hover":{"size":{"value":210},"stroke":{"value":"white"}}}}]},"value":"#gorilla_repl.vega.VegaView{:content {:width 400, :height 247.2188, :padding {:top 10, :left 55, :bottom 40, :right 10}, :scales [{:name \"x\", :type \"linear\", :range \"width\", :zero false, :domain {:data \"5b10f598-a02d-48d6-8f2f-e3542ecc7416\", :field \"data.x\"}} {:name \"y\", :type \"linear\", :range \"height\", :nice true, :zero false, :domain {:data \"5b10f598-a02d-48d6-8f2f-e3542ecc7416\", :field \"data.y\"}}], :axes [{:type \"x\", :scale \"x\"} {:type \"y\", :scale \"y\"}], :data ({:name \"5b10f598-a02d-48d6-8f2f-e3542ecc7416\", :values ({:x 9, :y 198910} {:x 9, :y 230476} {:x 9, :y 230476} {:x 9, :y 230476} {:x 9, :y 230476} {:x 9, :y 230476} {:x 9, :y 230476} {:x 8, :y 308451} {:x 7, :y 352653} {:x 9, :y 385172} {:x 9, :y 385172} {:x 9, :y 385172} {:x 9, :y 385172} {:x 9, :y 385172} {:x 8, :y 458764} {:x 9, :y 483609} {:x 9, :y 483609} {:x 7, :y 583268} {:x 7, :y 583268} {:x 7, :y 583268} {:x 7, :y 583347} {:x 7, :y 583347} {:x 6, :y 596241} {:x 6, :y 596241} {:x 8, :y 713912})} {:name \"39decfb1-28a1-462c-90e9-dc1bb2c871b2\", :values ({:x 7, :y 198910} {:x 8, :y 230476} {:x 8, :y 230476} {:x 8, :y 230476} {:x 8, :y 230476} {:x 8, :y 230476} {:x 8, :y 230476} {:x 6, :y 308451} {:x 6, :y 352653} {:x 9, :y 385172} {:x 9, :y 385172} {:x 9, :y 385172} {:x 9, :y 385172} {:x 9, :y 385172} {:x 8, :y 458764} {:x 6, :y 483609} {:x 6, :y 483609} {:x 5, :y 583268} {:x 5, :y 583268} {:x 5, :y 583268} {:x 7, :y 583347} {:x 7, :y 583347} {:x 5, :y 596241} {:x 5, :y 596241} {:x 9, :y 713912})}), :marks ({:type \"symbol\", :from {:data \"5b10f598-a02d-48d6-8f2f-e3542ecc7416\"}, :properties {:enter {:x {:scale \"x\", :field \"data.x\"}, :y {:scale \"y\", :field \"data.y\"}, :fill {:value \"red\"}, :fillOpacity {:value 0.75}}, :update {:shape \"circle\", :size {:value 70}, :stroke {:value \"transparent\"}}, :hover {:size {:value 210}, :stroke {:value \"white\"}}}} {:type \"symbol\", :from {:data \"39decfb1-28a1-462c-90e9-dc1bb2c871b2\"}, :properties {:enter {:x {:scale \"x\", :field \"data.x\"}, :y {:scale \"y\", :field \"data.y\"}, :fill {:value \"blue\"}, :fillOpacity {:value 0.75}}, :update {:shape \"circle\", :size {:value 70}, :stroke {:value \"transparent\"}}, :hover {:size {:value 210}, :stroke {:value \"white\"}}}})}}"}
+;;; {"type":"vega","content":{"width":1200,"height":741.6563720703125,"padding":{"top":10,"left":55,"bottom":40,"right":10},"scales":[{"name":"x","type":"linear","range":"width","zero":false,"domain":[1,10]},{"name":"y","type":"linear","range":"height","nice":true,"zero":false,"domain":{"data":"b52b29a3-7814-4e30-a87f-2db0a819bd92","field":"data.y"}}],"axes":[{"type":"x","scale":"x"},{"type":"y","scale":"y"}],"data":[{"name":"b52b29a3-7814-4e30-a87f-2db0a819bd92","values":[{"x":5,"y":38417},{"x":4,"y":38823},{"x":4,"y":38823},{"x":4,"y":38823},{"x":4,"y":38823},{"x":6,"y":43133},{"x":6,"y":43133},{"x":6,"y":43133},{"x":6,"y":43133},{"x":6,"y":43133},{"x":4,"y":45051},{"x":4,"y":45051},{"x":4,"y":45051},{"x":4,"y":45936},{"x":4,"y":45936},{"x":5,"y":50361},{"x":5,"y":58439},{"x":5,"y":58439},{"x":7,"y":59414},{"x":6,"y":75995},{"x":6,"y":75995},{"x":4,"y":86746},{"x":4,"y":86746},{"x":4,"y":86746},{"x":4,"y":86746}]},{"name":"a75f38dc-ac0e-4eb5-a700-5871b9825b52","values":[{"x":9,"y":38417},{"x":8,"y":38823},{"x":8,"y":38823},{"x":8,"y":38823},{"x":8,"y":38823},{"x":9,"y":43133},{"x":9,"y":43133},{"x":9,"y":43133},{"x":9,"y":43133},{"x":9,"y":43133},{"x":9,"y":45051},{"x":9,"y":45051},{"x":9,"y":45051},{"x":7,"y":45936},{"x":7,"y":45936},{"x":8,"y":50361},{"x":7,"y":58439},{"x":7,"y":58439},{"x":9,"y":59414},{"x":8,"y":75995},{"x":8,"y":75995},{"x":6,"y":86746},{"x":6,"y":86746},{"x":6,"y":86746},{"x":6,"y":86746}]}],"marks":[{"type":"symbol","from":{"data":"b52b29a3-7814-4e30-a87f-2db0a819bd92"},"properties":{"enter":{"x":{"scale":"x","field":"data.x"},"y":{"scale":"y","field":"data.y"},"fill":{"value":"red"},"fillOpacity":{"value":0.25}},"update":{"shape":"circle","size":{"value":70},"stroke":{"value":"transparent"}},"hover":{"size":{"value":210},"stroke":{"value":"white"}}}},{"type":"symbol","from":{"data":"a75f38dc-ac0e-4eb5-a700-5871b9825b52"},"properties":{"enter":{"x":{"scale":"x","field":"data.x"},"y":{"scale":"y","field":"data.y"},"fill":{"value":"blue"},"fillOpacity":{"value":0.25}},"update":{"shape":"circle","size":{"value":70},"stroke":{"value":"transparent"}},"hover":{"size":{"value":210},"stroke":{"value":"white"}}}}]},"value":"#gorilla_repl.vega.VegaView{:content {:width 1200, :height 741.6564, :padding {:top 10, :left 55, :bottom 40, :right 10}, :scales [{:name \"x\", :type \"linear\", :range \"width\", :zero false, :domain [1 10]} {:name \"y\", :type \"linear\", :range \"height\", :nice true, :zero false, :domain {:data \"b52b29a3-7814-4e30-a87f-2db0a819bd92\", :field \"data.y\"}}], :axes [{:type \"x\", :scale \"x\"} {:type \"y\", :scale \"y\"}], :data ({:name \"b52b29a3-7814-4e30-a87f-2db0a819bd92\", :values ({:x 5, :y 38417} {:x 4, :y 38823} {:x 4, :y 38823} {:x 4, :y 38823} {:x 4, :y 38823} {:x 6, :y 43133} {:x 6, :y 43133} {:x 6, :y 43133} {:x 6, :y 43133} {:x 6, :y 43133} {:x 4, :y 45051} {:x 4, :y 45051} {:x 4, :y 45051} {:x 4, :y 45936} {:x 4, :y 45936} {:x 5, :y 50361} {:x 5, :y 58439} {:x 5, :y 58439} {:x 7, :y 59414} {:x 6, :y 75995} {:x 6, :y 75995} {:x 4, :y 86746} {:x 4, :y 86746} {:x 4, :y 86746} {:x 4, :y 86746})} {:name \"a75f38dc-ac0e-4eb5-a700-5871b9825b52\", :values ({:x 9, :y 38417} {:x 8, :y 38823} {:x 8, :y 38823} {:x 8, :y 38823} {:x 8, :y 38823} {:x 9, :y 43133} {:x 9, :y 43133} {:x 9, :y 43133} {:x 9, :y 43133} {:x 9, :y 43133} {:x 9, :y 45051} {:x 9, :y 45051} {:x 9, :y 45051} {:x 7, :y 45936} {:x 7, :y 45936} {:x 8, :y 50361} {:x 7, :y 58439} {:x 7, :y 58439} {:x 9, :y 59414} {:x 8, :y 75995} {:x 8, :y 75995} {:x 6, :y 86746} {:x 6, :y 86746} {:x 6, :y 86746} {:x 6, :y 86746})}), :marks ({:type \"symbol\", :from {:data \"b52b29a3-7814-4e30-a87f-2db0a819bd92\"}, :properties {:enter {:x {:scale \"x\", :field \"data.x\"}, :y {:scale \"y\", :field \"data.y\"}, :fill {:value \"red\"}, :fillOpacity {:value 0.25}}, :update {:shape \"circle\", :size {:value 70}, :stroke {:value \"transparent\"}}, :hover {:size {:value 210}, :stroke {:value \"white\"}}}} {:type \"symbol\", :from {:data \"a75f38dc-ac0e-4eb5-a700-5871b9825b52\"}, :properties {:enter {:x {:scale \"x\", :field \"data.x\"}, :y {:scale \"y\", :field \"data.y\"}, :fill {:value \"blue\"}, :fillOpacity {:value 0.25}}, :update {:shape \"circle\", :size {:value 70}, :stroke {:value \"transparent\"}}, :hover {:size {:value 210}, :stroke {:value \"white\"}}}})}}"}
 ;; <=
 
 ;; **
@@ -284,38 +300,10 @@
   )
 ;; @@
 ;; ->
-;;; 3
-;;; {:queue_a (), :cost_times (), :b_left 0, :new_a true, :new_b true, :queue_b (), :a_left 3, :turns_left 500, :pass 0}
-;;; {:queue_a (), :cost_times (), :b_left 0, :new_a true, :new_b true, :queue_b (500), :a_left 2, :turns_left 499, :pass 0}
-;;; {:queue_a (), :cost_times (), :b_left 0, :new_a true, :new_b true, :queue_b (499 500), :a_left 1, :turns_left 498, :pass 0}
-;;; {:queue_a (), :cost_times (), :b_left 2, :new_a true, :new_b true, :queue_b (498 499 500), :a_left 0, :turns_left 497, :pass 2}
-;;; {:queue_a (497), :cost_times (), :b_left 2, :new_a true, :new_b true, :queue_b (498 499 500), :a_left 0, :turns_left 496, :pass 1}
-;;; {:queue_a (496 497), :cost_times (), :b_left 2, :new_a true, :new_b true, :queue_b (496 498 499 500), :a_left 0, :turns_left 495, :pass 0}
-;;; {:queue_a (495 496 497), :cost_times (5), :b_left 1, :new_a true, :new_b true, :queue_b (496 498 499), :a_left 0, :turns_left 494, :pass 0}
-;;; {:queue_a (494 495 496 497), :cost_times (5 5), :b_left 0, :new_a true, :new_b true, :queue_b (496 498), :a_left 3, :turns_left 493, :pass 2}
-;;; {:queue_a (493 494 495 496 497), :cost_times (5 5), :b_left 0, :new_a true, :new_b true, :queue_b (496 498), :a_left 3, :turns_left 492, :pass 1}
-;;; {:queue_a (492 493 494 495 496 497), :cost_times (5 5), :b_left 0, :new_a true, :new_b true, :queue_b (496 498), :a_left 3, :turns_left 491, :pass 0}
-;;; {:queue_a (491 492 493 494 495 496), :cost_times (6 5 5), :b_left 0, :new_a false, :new_b false, :queue_b (496 498), :a_left 2, :turns_left 490, :pass 0}
-;;; {:queue_a (491 492 493 494 495), :cost_times (6 6 5 5), :b_left 0, :new_a true, :new_b true, :queue_b (490 496 498), :a_left 1, :turns_left 489, :pass 0}
-;;; {:queue_a (489 491 492 493 494), :cost_times (6 6 6 5 5), :b_left 2, :new_a false, :new_b false, :queue_b (489 490 496 498), :a_left 0, :turns_left 488, :pass 2}
-;;; {:queue_a (489 491 492 493 494), :cost_times (6 6 6 5 5), :b_left 2, :new_a true, :new_b true, :queue_b (489 490 496 498), :a_left 0, :turns_left 487, :pass 1}
-;;; {:queue_a (487 489 491 492 493 494), :cost_times (6 6 6 5 5), :b_left 2, :new_a true, :new_b true, :queue_b (489 490 496 498), :a_left 0, :turns_left 486, :pass 0}
-;;; {:queue_a (486 487 489 491 492 493 494), :cost_times (12 6 6 6 5 5), :b_left 1, :new_a true, :new_b true, :queue_b (489 490 496), :a_left 0, :turns_left 485, :pass 0}
-;;; {:queue_a (485 486 487 489 491 492 493 494), :cost_times (11 12 6 6 6 5 5), :b_left 0, :new_a true, :new_b true, :queue_b (485 489 490), :a_left 3, :turns_left 484, :pass 2}
-;;; {:queue_a (484 485 486 487 489 491 492 493 494), :cost_times (11 12 6 6 6 5 5), :b_left 0, :new_a true, :new_b true, :queue_b (484 485 489 490), :a_left 3, :turns_left 483, :pass 1}
-;;; {:queue_a (483 484 485 486 487 489 491 492 493 494), :cost_times (11 12 6 6 6 5 5), :b_left 0, :new_a true, :new_b true, :queue_b (483 484 485 489 490), :a_left 3, :turns_left 482, :pass 0}
-;;; {:queue_a (482 483 484 485 486 487 489 491 492 493), :cost_times (12 11 12 6 6 6 5 5), :b_left 0, :new_a true, :new_b true, :queue_b (483 484 485 489 490), :a_left 2, :turns_left 481, :pass 0}
-;;; {:queue_a (481 482 483 484 485 486 487 489 491 492), :cost_times (12 12 11 12 6 6 6 5 5), :b_left 0, :new_a true, :new_b true, :queue_b (483 484 485 489 490), :a_left 1, :turns_left 480, :pass 0}
+;;; nil
+;;; nil
 ;;; 
 ;; <-
 ;; =>
-;;; {"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/head_result</span>","value":"#'pp-code.SimpleCrossing/head_result"},{"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}],"value":"[#'pp-code.SimpleCrossing/head_result,nil]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/turns</span>","value":"#'pp-code.SimpleCrossing/turns"}],"value":"[[#'pp-code.SimpleCrossing/head_result,nil],#'pp-code.SimpleCrossing/turns]"}
+;;; {"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/head_result</span>","value":"#'pp-code.SimpleCrossing/head_result"},{"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}],"value":"[#'pp-code.SimpleCrossing/head_result,nil]"},{"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}],"value":"[[#'pp-code.SimpleCrossing/head_result,nil],nil]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/turns</span>","value":"#'pp-code.SimpleCrossing/turns"}],"value":"[[[#'pp-code.SimpleCrossing/head_result,nil],nil],#'pp-code.SimpleCrossing/turns]"},{"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}],"value":"[[[[#'pp-code.SimpleCrossing/head_result,nil],nil],#'pp-code.SimpleCrossing/turns],nil]"}
 ;; <=
-
-;; **
-;;; 
-;; **
-
-;; **
-;;; 
-;; **
