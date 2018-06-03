@@ -7,9 +7,10 @@
 ;; **
 
 ;; @@
-(use 'nstools.ns)
-(ns+ template
-  (:like pp-code.worksheet))
+(ns pp-code.SimpleCrossing
+  (:require [gorilla-plot.core :as plot])
+  (:use [anglican core emit runtime
+         [state :only [get-predicts get-log-weight]]]))
 ;; @@
 ;; =>
 ;;; {"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"},{"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}],"value":"[nil,nil]"}
