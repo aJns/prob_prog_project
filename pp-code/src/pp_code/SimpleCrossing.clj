@@ -12,16 +12,16 @@
   (:use [anglican core emit runtime
          [state :only [get-predicts get-log-weight]]]))
 ;; @@
-;; =>
-;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
-;; <=
 
 ;; **
 ;;; Set up variables. Change downtime means the duration when nobody moves after a change in light. Waiting cost function means that waiting 10 turns sucks more than 10x more than waiting 1 turn.
 ;; **
 
 ;; @@
-(def sim-params {:turns 500, :traffic-rate-a 0.2, :traffic-rate-b 0.4, :downtime 2})
+(let [a 0.5]
+  (def sim-params {:runs 1000, :turns 250, :traffic-rate-a a, :traffic-rate-b (- 1 a), :downtime 0}))
+
+(def simulation-runs(sim-params :runs))
 (def simulation_duration (sim-params :turns))
 (def traffic_rate_a (sim-params :traffic-rate-a))
 (def traffic_rate_b (sim-params :traffic-rate-b))
@@ -31,9 +31,6 @@
 (defn waiting_cost [t] (+ (* 10 t) (* 1 t t) ) )
 
 ;; @@
-;; =>
-;;; {"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/sim-params</span>","value":"#'pp-code.SimpleCrossing/sim-params"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/simulation_duration</span>","value":"#'pp-code.SimpleCrossing/simulation_duration"}],"value":"[#'pp-code.SimpleCrossing/sim-params,#'pp-code.SimpleCrossing/simulation_duration]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/traffic_rate_a</span>","value":"#'pp-code.SimpleCrossing/traffic_rate_a"}],"value":"[[#'pp-code.SimpleCrossing/sim-params,#'pp-code.SimpleCrossing/simulation_duration],#'pp-code.SimpleCrossing/traffic_rate_a]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/traffic_rate_b</span>","value":"#'pp-code.SimpleCrossing/traffic_rate_b"}],"value":"[[[#'pp-code.SimpleCrossing/sim-params,#'pp-code.SimpleCrossing/simulation_duration],#'pp-code.SimpleCrossing/traffic_rate_a],#'pp-code.SimpleCrossing/traffic_rate_b]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/change_downtime</span>","value":"#'pp-code.SimpleCrossing/change_downtime"}],"value":"[[[[#'pp-code.SimpleCrossing/sim-params,#'pp-code.SimpleCrossing/simulation_duration],#'pp-code.SimpleCrossing/traffic_rate_a],#'pp-code.SimpleCrossing/traffic_rate_b],#'pp-code.SimpleCrossing/change_downtime]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/waiting_cost</span>","value":"#'pp-code.SimpleCrossing/waiting_cost"}],"value":"[[[[[#'pp-code.SimpleCrossing/sim-params,#'pp-code.SimpleCrossing/simulation_duration],#'pp-code.SimpleCrossing/traffic_rate_a],#'pp-code.SimpleCrossing/traffic_rate_b],#'pp-code.SimpleCrossing/change_downtime],#'pp-code.SimpleCrossing/waiting_cost]"}
-;; <=
 
 ;; **
 ;;; Generate some traffic
@@ -64,9 +61,6 @@
     )
   )
 ;; @@
-;; =>
-;;; {"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/generate_traffic</span>","value":"#'pp-code.SimpleCrossing/generate_traffic"}
-;; <=
 
 ;; @@
 (def generate_traffic_query (doquery :importance generate_traffic [(sim-params :turns)]))
@@ -74,9 +68,6 @@
 (def generated_traffic (:result generate_traffic_sample))
 
 ;; @@
-;; =>
-;;; {"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/generate_traffic_query</span>","value":"#'pp-code.SimpleCrossing/generate_traffic_query"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/generate_traffic_sample</span>","value":"#'pp-code.SimpleCrossing/generate_traffic_sample"}],"value":"[#'pp-code.SimpleCrossing/generate_traffic_query,#'pp-code.SimpleCrossing/generate_traffic_sample]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/generated_traffic</span>","value":"#'pp-code.SimpleCrossing/generated_traffic"}],"value":"[[#'pp-code.SimpleCrossing/generate_traffic_query,#'pp-code.SimpleCrossing/generate_traffic_sample],#'pp-code.SimpleCrossing/generated_traffic]"}
-;; <=
 
 ;; **
 ;;; Test different traffic light configurations with generated traffic
@@ -197,18 +188,12 @@
         )
       )  ))
 ;; @@
-;; =>
-;;; {"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/simulate_crossing</span>","value":"#'pp-code.SimpleCrossing/simulate_crossing"}
-;; <=
 
 ;; @@
 
 (def query_def (doquery :lmh simulate_crossing [simulation_duration (:traffic_a generated_traffic) (:traffic_b generated_traffic)]))
-(def query_sample (take-nth 10 (take 2000 (drop 1000 query_def))))
+(def query_sample (take-nth 10 (take simulation-runs (drop 1000 query_def))))
 ;; @@
-;; =>
-;;; {"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/query_def</span>","value":"#'pp-code.SimpleCrossing/query_def"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/query_sample</span>","value":"#'pp-code.SimpleCrossing/query_sample"}],"value":"[#'pp-code.SimpleCrossing/query_def,#'pp-code.SimpleCrossing/query_sample]"}
-;; <=
 
 ;; @@
 (def results (map :result query_sample) )
@@ -228,43 +213,12 @@
   (println c)
   )
 ;; @@
-;; ->
-;;; {:cost 38417, :cycle_a 5, :cycle_b 9}
-;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
-;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
-;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
-;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
-;;; {:cost 43133, :cycle_a 6, :cycle_b 9}
-;;; {:cost 43133, :cycle_a 6, :cycle_b 9}
-;;; {:cost 43133, :cycle_a 6, :cycle_b 9}
-;;; {:cost 43133, :cycle_a 6, :cycle_b 9}
-;;; {:cost 43133, :cycle_a 6, :cycle_b 9}
-;;; {:cost 45051, :cycle_a 4, :cycle_b 9}
-;;; {:cost 45051, :cycle_a 4, :cycle_b 9}
-;;; {:cost 45051, :cycle_a 4, :cycle_b 9}
-;;; {:cost 45936, :cycle_a 4, :cycle_b 7}
-;;; {:cost 45936, :cycle_a 4, :cycle_b 7}
-;;; {:cost 50361, :cycle_a 5, :cycle_b 8}
-;;; {:cost 58439, :cycle_a 5, :cycle_b 7}
-;;; {:cost 58439, :cycle_a 5, :cycle_b 7}
-;;; {:cost 59414, :cycle_a 7, :cycle_b 9}
-;;; {:cost 75995, :cycle_a 6, :cycle_b 8}
-;;; {:cost 75995, :cycle_a 6, :cycle_b 8}
-;;; {:cost 86746, :cycle_a 4, :cycle_b 6}
-;;; {:cost 86746, :cycle_a 4, :cycle_b 6}
-;;; {:cost 86746, :cycle_a 4, :cycle_b 6}
-;;; {:cost 86746, :cycle_a 4, :cycle_b 6}
-;;; 
-;; <-
-;; =>
-;;; {"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/results</span>","value":"#'pp-code.SimpleCrossing/results"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/performance</span>","value":"#'pp-code.SimpleCrossing/performance"}],"value":"[#'pp-code.SimpleCrossing/results,#'pp-code.SimpleCrossing/performance]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/top_cycles</span>","value":"#'pp-code.SimpleCrossing/top_cycles"}],"value":"[[#'pp-code.SimpleCrossing/results,#'pp-code.SimpleCrossing/performance],#'pp-code.SimpleCrossing/top_cycles]"},{"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}],"value":"[[[#'pp-code.SimpleCrossing/results,#'pp-code.SimpleCrossing/performance],#'pp-code.SimpleCrossing/top_cycles],nil]"}
-;; <=
 
 ;; @@
 (let [get-cycles (fn [cycle-key] (map (fn [c] (vals (select-keys c [cycle-key :cost]))) top_cycles))
       plot-size 1200
       opacity 0.25
-      x-range [1 10]]
+      x-range [0 10]]
   (println sim-params)
   (doseq [c (take 5 top_cycles)]
     (println c))
@@ -272,18 +226,6 @@
     (plot/list-plot (get-cycles :cycle_a) :plot-size plot-size :opacity opacity :plot-range [x-range :all] :colour "red")
   	(plot/list-plot (get-cycles :cycle_b) :plot-size plot-size :opacity opacity :plot-range [x-range :all] :colour "blue")))
 ;; @@
-;; ->
-;;; {:turns 500, :traffic-rate-a 0.2, :traffic-rate-b 0.4, :downtime 2}
-;;; {:cost 38417, :cycle_a 5, :cycle_b 9}
-;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
-;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
-;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
-;;; {:cost 38823, :cycle_a 4, :cycle_b 8}
-;;; 
-;; <-
-;; =>
-;;; {"type":"vega","content":{"width":1200,"height":741.6563720703125,"padding":{"top":10,"left":55,"bottom":40,"right":10},"scales":[{"name":"x","type":"linear","range":"width","zero":false,"domain":[1,10]},{"name":"y","type":"linear","range":"height","nice":true,"zero":false,"domain":{"data":"b52b29a3-7814-4e30-a87f-2db0a819bd92","field":"data.y"}}],"axes":[{"type":"x","scale":"x"},{"type":"y","scale":"y"}],"data":[{"name":"b52b29a3-7814-4e30-a87f-2db0a819bd92","values":[{"x":5,"y":38417},{"x":4,"y":38823},{"x":4,"y":38823},{"x":4,"y":38823},{"x":4,"y":38823},{"x":6,"y":43133},{"x":6,"y":43133},{"x":6,"y":43133},{"x":6,"y":43133},{"x":6,"y":43133},{"x":4,"y":45051},{"x":4,"y":45051},{"x":4,"y":45051},{"x":4,"y":45936},{"x":4,"y":45936},{"x":5,"y":50361},{"x":5,"y":58439},{"x":5,"y":58439},{"x":7,"y":59414},{"x":6,"y":75995},{"x":6,"y":75995},{"x":4,"y":86746},{"x":4,"y":86746},{"x":4,"y":86746},{"x":4,"y":86746}]},{"name":"a75f38dc-ac0e-4eb5-a700-5871b9825b52","values":[{"x":9,"y":38417},{"x":8,"y":38823},{"x":8,"y":38823},{"x":8,"y":38823},{"x":8,"y":38823},{"x":9,"y":43133},{"x":9,"y":43133},{"x":9,"y":43133},{"x":9,"y":43133},{"x":9,"y":43133},{"x":9,"y":45051},{"x":9,"y":45051},{"x":9,"y":45051},{"x":7,"y":45936},{"x":7,"y":45936},{"x":8,"y":50361},{"x":7,"y":58439},{"x":7,"y":58439},{"x":9,"y":59414},{"x":8,"y":75995},{"x":8,"y":75995},{"x":6,"y":86746},{"x":6,"y":86746},{"x":6,"y":86746},{"x":6,"y":86746}]}],"marks":[{"type":"symbol","from":{"data":"b52b29a3-7814-4e30-a87f-2db0a819bd92"},"properties":{"enter":{"x":{"scale":"x","field":"data.x"},"y":{"scale":"y","field":"data.y"},"fill":{"value":"red"},"fillOpacity":{"value":0.25}},"update":{"shape":"circle","size":{"value":70},"stroke":{"value":"transparent"}},"hover":{"size":{"value":210},"stroke":{"value":"white"}}}},{"type":"symbol","from":{"data":"a75f38dc-ac0e-4eb5-a700-5871b9825b52"},"properties":{"enter":{"x":{"scale":"x","field":"data.x"},"y":{"scale":"y","field":"data.y"},"fill":{"value":"blue"},"fillOpacity":{"value":0.25}},"update":{"shape":"circle","size":{"value":70},"stroke":{"value":"transparent"}},"hover":{"size":{"value":210},"stroke":{"value":"white"}}}}]},"value":"#gorilla_repl.vega.VegaView{:content {:width 1200, :height 741.6564, :padding {:top 10, :left 55, :bottom 40, :right 10}, :scales [{:name \"x\", :type \"linear\", :range \"width\", :zero false, :domain [1 10]} {:name \"y\", :type \"linear\", :range \"height\", :nice true, :zero false, :domain {:data \"b52b29a3-7814-4e30-a87f-2db0a819bd92\", :field \"data.y\"}}], :axes [{:type \"x\", :scale \"x\"} {:type \"y\", :scale \"y\"}], :data ({:name \"b52b29a3-7814-4e30-a87f-2db0a819bd92\", :values ({:x 5, :y 38417} {:x 4, :y 38823} {:x 4, :y 38823} {:x 4, :y 38823} {:x 4, :y 38823} {:x 6, :y 43133} {:x 6, :y 43133} {:x 6, :y 43133} {:x 6, :y 43133} {:x 6, :y 43133} {:x 4, :y 45051} {:x 4, :y 45051} {:x 4, :y 45051} {:x 4, :y 45936} {:x 4, :y 45936} {:x 5, :y 50361} {:x 5, :y 58439} {:x 5, :y 58439} {:x 7, :y 59414} {:x 6, :y 75995} {:x 6, :y 75995} {:x 4, :y 86746} {:x 4, :y 86746} {:x 4, :y 86746} {:x 4, :y 86746})} {:name \"a75f38dc-ac0e-4eb5-a700-5871b9825b52\", :values ({:x 9, :y 38417} {:x 8, :y 38823} {:x 8, :y 38823} {:x 8, :y 38823} {:x 8, :y 38823} {:x 9, :y 43133} {:x 9, :y 43133} {:x 9, :y 43133} {:x 9, :y 43133} {:x 9, :y 43133} {:x 9, :y 45051} {:x 9, :y 45051} {:x 9, :y 45051} {:x 7, :y 45936} {:x 7, :y 45936} {:x 8, :y 50361} {:x 7, :y 58439} {:x 7, :y 58439} {:x 9, :y 59414} {:x 8, :y 75995} {:x 8, :y 75995} {:x 6, :y 86746} {:x 6, :y 86746} {:x 6, :y 86746} {:x 6, :y 86746})}), :marks ({:type \"symbol\", :from {:data \"b52b29a3-7814-4e30-a87f-2db0a819bd92\"}, :properties {:enter {:x {:scale \"x\", :field \"data.x\"}, :y {:scale \"y\", :field \"data.y\"}, :fill {:value \"red\"}, :fillOpacity {:value 0.25}}, :update {:shape \"circle\", :size {:value 70}, :stroke {:value \"transparent\"}}, :hover {:size {:value 210}, :stroke {:value \"white\"}}}} {:type \"symbol\", :from {:data \"a75f38dc-ac0e-4eb5-a700-5871b9825b52\"}, :properties {:enter {:x {:scale \"x\", :field \"data.x\"}, :y {:scale \"y\", :field \"data.y\"}, :fill {:value \"blue\"}, :fillOpacity {:value 0.25}}, :update {:shape \"circle\", :size {:value 70}, :stroke {:value \"transparent\"}}, :hover {:size {:value 210}, :stroke {:value \"white\"}}}})}}"}
-;; <=
 
 ;; **
 ;;; Print log for debugging purposes
@@ -300,10 +242,14 @@
   )
 ;; @@
 ;; ->
-;;; nil
-;;; nil
+;;; {:queue_a (407 408 411 414 415 416 417), :cost_times (53 56 8 8 8 8 8 8 46 47 3 3 3 3 3 6 38 39 1 3 3 30 30 2 2 2 4 21 22 3 3 3 5 15 17 1 3 9 9 1 1 4 4 5 3), :b_left 0, :new_a false, :new_b false, :queue_b (410 411 412 413 414 415 416 420 421 422 424 425 426 427 428 429 430 432 433 436 437 439 442 445 446 448 450 451 453 455 456 457 458), :a_left 6, :turns_left 406, :pass 2}
+;;; {:queue_a (407 408 411 414 415 416 417), :cost_times (53 56 8 8 8 8 8 8 46 47 3 3 3 3 3 6 38 39 1 3 3 30 30 2 2 2 4 21 22 3 3 3 5 15 17 1 3 9 9 1 1 4 4 5 3), :b_left 0, :new_a false, :new_b false, :queue_b (410 411 412 413 414 415 416 420 421 422 424 425 426 427 428 429 430 432 433 436 437 439 442 445 446 448 450 451 453 455 456 457 458), :a_left 6, :turns_left 405, :pass 1}
+;;; {:queue_a (407 408 411 414 415 416 417), :cost_times (53 56 8 8 8 8 8 8 46 47 3 3 3 3 3 6 38 39 1 3 3 30 30 2 2 2 4 21 22 3 3 3 5 15 17 1 3 9 9 1 1 4 4 5 3), :b_left 0, :new_a true, :new_b true, :queue_b (410 411 412 413 414 415 416 420 421 422 424 425 426 427 428 429 430 432 433 436 437 439 442 445 446 448 450 451 453 455 456 457 458), :a_left 6, :turns_left 404, :pass 0}
+;;; {:queue_a (404 407 408 411 414 415 416), :cost_times (13 53 56 8 8 8 8 8 8 46 47 3 3 3 3 3 6 38 39 1 3 3 30 30 2 2 2 4 21 22 3 3 3 5 15 17 1 3 9 9 1 1 4 4 5 3), :b_left 0, :new_a true, :new_b true, :queue_b (404 410 411 412 413 414 415 416 420 421 422 424 425 426 427 428 429 430 432 433 436 437 439 442 445 446 448 450 451 453 455 456 457 458), :a_left 5, :turns_left 403, :pass 0}
+;;; {:queue_a (403 404 407 408 411 414 415), :cost_times (13 13 53 56 8 8 8 8 8 8 46 47 3 3 3 3 3 6 38 39 1 3 3 30 30 2 2 2 4 21 22 3 3 3 5 15 17 1 3 9 9 1 1 4 4 5 3), :b_left 0, :new_a false, :new_b false, :queue_b (403 404 410 411 412 413 414 415 416 420 421 422 424 425 426 427 428 429 430 432 433 436 437 439 442 445 446 448 450 451 453 455 456 457 458), :a_left 4, :turns_left 402, :pass 0}
+;;; {:queue_a (403 404 407 408 411 414), :cost_times (13 13 13 53 56 8 8 8 8 8 8 46 47 3 3 3 3 3 6 38 39 1 3 3 30 30 2 2 2 4 21 22 3 3 3 5 15 17 1 3 9 9 1 1 4 4 5 3), :b_left 0, :new_a true, :new_b true, :queue_b (402 403 404 410 411 412 413 414 415 416 420 421 422 424 425 426 427 428 429 430 432 433 436 437 439 442 445 446 448 450 451 453 455 456 457 458), :a_left 3, :turns_left 401, :pass 0}
+;;; {:queue_a (401 403 404 407 408 411), :cost_times (13 13 13 13 53 56 8 8 8 8 8 8 46 47 3 3 3 3 3 6 38 39 1 3 3 30 30 2 2 2 4 21 22 3 3 3 5 15 17 1 3 9 9 1 1 4 4 5 3), :b_left 0, :new_a true, :new_b true, :queue_b (401 402 403 404 410 411 412 413 414 415 416 420 421 422 424 425 426 427 428 429 430 432 433 436 437 439 442 445 446 448 450 451 453 455 456 457 458), :a_left 2, :turns_left 400, :pass 0}
+;;; {:queue_a (400 401 403 404 407 408), :cost_times (11 13 13 13 13 53 56 8 8 8 8 8 8 46 47 3 3 3 3 3 6 38 39 1 3 3 30 30 2 2 2 4 21 22 3 3 3 5 15 17 1 3 9 9 1 1 4 4 5 3), :b_left 0, :new_a false, :new_b false, :queue_b (400 401 402 403 404 410 411 412 413 414 415 416 420 421 422 424 425 426 427 428 429 430 432 433 436 437 439 442 445 446 448 450 451 453 455 456 457 458), :a_left 1, :turns_left 399, :pass 0}
+;;; {:queue_a (400 401 403 404 407), :cost_times (9 11 13 13 13 13 53 56 8 8 8 8 8 8 46 47 3 3 3 3 3 6 38 39 1 3 3 30 30 2 2 2 4 21 22 3 3 3 5 15 17 1 3 9 9 1 1 4 4 5 3), :b_left 2, :new_a true, :new_b true, :queue_b (400 401 402 403 404 410 411 412 413 414 415 416 420 421 422 424 425 426 427 428 429 430 432 433 436 437 439 442 445 446 448 450 451 453 455 456 457 458), :a_left 0, :turns_left 398, :pass 2}
 ;;; 
 ;; <-
-;; =>
-;;; {"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"list-like","open":"","close":"","separator":"</pre><pre>","items":[{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/head_result</span>","value":"#'pp-code.SimpleCrossing/head_result"},{"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}],"value":"[#'pp-code.SimpleCrossing/head_result,nil]"},{"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}],"value":"[[#'pp-code.SimpleCrossing/head_result,nil],nil]"},{"type":"html","content":"<span class='clj-var'>#&#x27;pp-code.SimpleCrossing/turns</span>","value":"#'pp-code.SimpleCrossing/turns"}],"value":"[[[#'pp-code.SimpleCrossing/head_result,nil],nil],#'pp-code.SimpleCrossing/turns]"},{"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}],"value":"[[[[#'pp-code.SimpleCrossing/head_result,nil],nil],#'pp-code.SimpleCrossing/turns],nil]"}
-;; <=
